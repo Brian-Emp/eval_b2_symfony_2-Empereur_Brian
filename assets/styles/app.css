@@ -158,6 +158,9 @@ main.container { padding-top: 32px; padding-bottom: 64px; }
 .event-title a::after { content: ""; position: absolute; inset: 0; }
 .event-card:hover .event-title a { color: var(--cat); }
 
+/* Bouton « Se désinscrire » sous une carte (page « Mes inscriptions ») */
+.event-card form { margin: 10px 0 0; }
+
 /* Une couleur par catégorie */
 .cat-concert { --cat: var(--concert); }
 .cat-conference { --cat: var(--conference); }
