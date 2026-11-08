@@ -6,64 +6,42 @@
     <div class="section-head">
         <div>
             <h1>Événements à valider</h1>
-            <p class="muted">3 événements en attente de validation.</p>
+            <p class="muted">{{ events|length }} événement(s) en attente de validation.</p>
         </div>
     </div>
 
-    <div class="card table-wrap">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Événement</th>
-                    <th>Date</th>
-                    <th>Catégorie</th>
-                    <th>Places</th>
-                    <th>Statut</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="{{ path('app_event_show', {id: 7}) }}">Atelier cuisine du monde</a></td>
-                    <td>16/12/2026 18h00</td>
-                    <td><span class="badge cat-atelier">Atelier</span></td>
-                    <td>12</td>
-                    <td><span class="badge badge-pending">Non validé</span></td>
-                    <td>
-                        <form method="post">
-                            <button type="submit" class="btn btn-small btn-success">Valider</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td><a href="{{ path('app_event_show', {id: 8}) }}">Tournoi de basket 3x3</a></td>
-                    <td>19/12/2026 14h00</td>
-                    <td><span class="badge cat-sport">Sport</span></td>
-                    <td>48</td>
-                    <td><span class="badge badge-pending">Non validé</span></td>
-                    <td>
-                        <form method="post">
-                            <button type="submit" class="btn btn-small btn-success">Valider</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td><a href="{{ path('app_event_show', {id: 9}) }}">Concert de Noël</a></td>
-                    <td>22/12/2026 20h00</td>
-                    <td><span class="badge cat-concert">Concert</span></td>
-                    <td>150</td>
-                    <td><span class="badge badge-pending">Non validé</span></td>
-                    <td>
-                        <form method="post">
-                            <button type="submit" class="btn btn-small btn-success">Valider</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    {# Si aucun événement à valider :
-    <p class="empty">Aucun événement en attente 🎉</p>
-    #}
+    {% if events is empty %}
+        <p class="empty">Aucun événement en attente 🎉</p>
+    {% else %}
+        <div class="card table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Événement</th>
+                        <th>Date</th>
+                        <th>Catégorie</th>
+                        <th>Places</th>
+                        <th>Statut</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td><a href="{{ path('app_event_show', {id: event.id}) }}">{{ event.title }}</a></td>
+                            <td>{{ event.date|date('d/m/Y H\\hi') }}</td>
+                            <td><span class="badge cat-{{ event.category }}">{{ event.categoryLabel }}</span></td>
+                            <td>{{ event.places }}</td>
+                            <td><span class="badge badge-pending">Non validé</span></td>
+                            <td>
+                                <form method="post" action="{{ path('app_validate_event', {id: event.id}) }}">
+                                    <button type="submit" class="btn btn-small btn-success">Valider</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}

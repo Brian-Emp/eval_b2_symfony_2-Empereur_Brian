@@ -15,72 +15,36 @@
     <div class="section-head">
         <h2>À venir</h2>
         <ul class="legend">
-            <li><a class="active" href="{{ path('app_home') }}">Toutes</a></li>
-            <li class="cat-concert"><a href="{{ path('app_home', {categorie: 'concert'}) }}">Concert</a></li>
-            <li class="cat-conference"><a href="{{ path('app_home', {categorie: 'conference'}) }}">Conférence</a></li>
-            <li class="cat-atelier"><a href="{{ path('app_home', {categorie: 'atelier'}) }}">Atelier</a></li>
-            <li class="cat-sport"><a href="{{ path('app_home', {categorie: 'sport'}) }}">Sport</a></li>
+            <li><a {% if not categorie %}class="active"{% endif %} href="{{ path('app_home') }}">Toutes</a></li>
+            <li class="cat-concert"><a {% if categorie == 'concert' %}class="active"{% endif %} href="{{ path('app_home', {categorie: 'concert'}) }}">Concert</a></li>
+            <li class="cat-conference"><a {% if categorie == 'conference' %}class="active"{% endif %} href="{{ path('app_home', {categorie: 'conference'}) }}">Conférence</a></li>
+            <li class="cat-atelier"><a {% if categorie == 'atelier' %}class="active"{% endif %} href="{{ path('app_home', {categorie: 'atelier'}) }}">Atelier</a></li>
+            <li class="cat-sport"><a {% if categorie == 'sport' %}class="active"{% endif %} href="{{ path('app_home', {categorie: 'sport'}) }}">Sport</a></li>
         </ul>
     </div>
 
-    <ul class="event-list">
-        <li class="event-card cat-concert">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/concert.jpg') }}" alt="">
-                <div class="event-date"><span class="day">07</span><span class="month">nov.</span></div>
-                <span class="badge">Concert</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 1}) }}">Soirée jazz au Kiosque</a></h3>
-            <span class="muted">07/11/2026 · 20h30</span>
-        </li>
-        <li class="event-card cat-conference">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/conference.jpg') }}" alt="">
-                <div class="event-date"><span class="day">12</span><span class="month">nov.</span></div>
-                <span class="badge">Conférence</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 2}) }}">L'IA expliquée simplement</a></h3>
-            <span class="muted">12/11/2026 · 18h00</span>
-        </li>
-        <li class="event-card cat-atelier">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/atelier.jpg') }}" alt="">
-                <div class="event-date"><span class="day">21</span><span class="month">nov.</span></div>
-                <span class="badge">Atelier</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 3}) }}">Initiation à la poterie</a></h3>
-            <span class="muted">21/11/2026 · 14h00</span>
-        </li>
-        <li class="event-card cat-sport">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/sport.jpg') }}" alt="">
-                <div class="event-date"><span class="day">29</span><span class="month">nov.</span></div>
-                <span class="badge">Sport</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 4}) }}">Semi-marathon de la ville</a></h3>
-            <span class="muted">29/11/2026 · 09h00</span>
-        </li>
-        <li class="event-card cat-concert">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/rock.jpg') }}" alt="">
-                <div class="event-date"><span class="day">05</span><span class="month">déc.</span></div>
-                <span class="badge">Concert</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 5}) }}">Rock indé au Sous-Sol</a></h3>
-            <span class="muted">05/12/2026 · 21h00</span>
-        </li>
-        <li class="event-card cat-sport">
-            <div class="event-media">
-                <img class="event-image" src="{{ asset('images/escalade.jpg') }}" alt="">
-                <div class="event-date"><span class="day">13</span><span class="month">déc.</span></div>
-                <span class="badge">Sport</span>
-            </div>
-            <h3 class="event-title"><a href="{{ path('app_event_show', {id: 6}) }}">Escalade en famille</a></h3>
-            <span class="muted">13/12/2026 · 10h00</span>
-        </li>
-    </ul>
+    {# Noms des mois en français (le filtre date affiche les mois en anglais) #}
+    {% set mois = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] %}
 
-    {# Si aucun événement :
-    <p class="empty">Aucun événement à venir pour le moment.</p>
-    #}
+    {% if events is empty %}
+        <p class="empty">Aucun événement à venir pour le moment.</p>
+    {% else %}
+        <ul class="event-list">
+            {% for event in events %}
+                <li class="event-card cat-{{ event.category }}">
+                    <div class="event-media">
+                        {% if event.image %}
+                            <img class="event-image" src="{{ asset('uploads/' ~ event.image) }}" alt="">
+                        {% else %}
+                            <img class="event-image" src="{{ asset('images/' ~ event.category ~ '.jpg') }}" alt="">
+                        {% endif %}
+                        <div class="event-date"><span class="day">{{ event.date|date('d') }}</span><span class="month">{{ mois[event.date|date('n') - 1] }}</span></div>
+                        <span class="badge">{{ event.categoryLabel }}</span>
+                    </div>
+                    <h3 class="event-title"><a href="{{ path('app_event_show', {id: event.id}) }}">{{ event.title }}</a></h3>
+                    <span class="muted">{{ event.date|date('d/m/Y · H\\hi') }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}

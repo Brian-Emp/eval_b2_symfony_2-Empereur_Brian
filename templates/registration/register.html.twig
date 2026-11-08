@@ -7,20 +7,7 @@
         <div class="card">
             <h1>Créer un compte</h1>
 
-            <form class="form" method="post">
-                <div>
-                    <label for="registration_form_email" class="required">Email</label>
-                    <input type="email" id="registration_form_email" name="registration_form[email]" autocomplete="email" required>
-                </div>
-
-                <div>
-                    <label for="registration_form_plainPassword" class="required">Mot de passe</label>
-                    <input type="password" id="registration_form_plainPassword" name="registration_form[plainPassword]" autocomplete="new-password" required>
-                    <div class="help-text">6 caractères minimum.</div>
-                </div>
-
-                <button type="submit">Créer mon compte</button>
-            </form>
+            {{ form(registrationForm, {attr: {class: 'form'}}) }}
 
             <p class="form-footer">Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a></p>
         </div>

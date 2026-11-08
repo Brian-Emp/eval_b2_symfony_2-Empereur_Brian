@@ -10,45 +10,7 @@
             <h1>Ajouter un événement</h1>
             <p class="muted">Votre événement sera visible après validation par un administrateur.</p>
 
-            <form class="form" method="post" enctype="multipart/form-data">
-                <div>
-                    <label for="event_title" class="required">Titre</label>
-                    <input type="text" id="event_title" name="event[title]" placeholder="Ex. : Soirée jazz au Kiosque" required>
-                </div>
-
-                <div>
-                    <label for="event_date" class="required">Date</label>
-                    <input type="datetime-local" id="event_date" name="event[date]" required>
-                </div>
-
-                <div>
-                    <label for="event_information" class="required">Informations</label>
-                    <textarea id="event_information" name="event[information]" placeholder="Lieu, programme, tarif..." required></textarea>
-                </div>
-
-                <div>
-                    <label for="event_category">Catégorie</label>
-                    <select id="event_category" name="event[category]">
-                        <option value="Concert">Concert</option>
-                        <option value="Conférence">Conférence</option>
-                        <option value="Atelier">Atelier</option>
-                        <option value="Sport">Sport</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="event_places">Nombre de places</label>
-                    <input type="number" id="event_places" name="event[places]" min="1" value="20">
-                </div>
-
-                <div>
-                    <label for="event_image">Image à la une</label>
-                    <input type="file" id="event_image" name="event[image]" accept="image/*">
-                    <div class="help-text">JPG, PNG ou WebP.</div>
-                </div>
-
-                <button type="submit">Enregistrer l'événement</button>
-            </form>
+            {{ form(form, {attr: {class: 'form'}}) }}
         </div>
     </div>
 {% endblock %}
