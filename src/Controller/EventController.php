@@ -24,8 +24,8 @@ final class EventController extends AbstractController
             // Upload de l'image (doc : https://symfony.com/doc/7.4/controller/upload_file.html)
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $fileName = uniqid().'.'.$imageFile->guessExtension();
-                $imageFile->move($this->getParameter('kernel.project_dir').'/public/uploads', $fileName);
+                $fileName = uniqid() . '.' . $imageFile->guessExtension();
+                $imageFile->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
                 $event->setImage($fileName);
             }
 
@@ -54,6 +54,15 @@ final class EventController extends AbstractController
         ]);
     }
 
+    #[Route('/mes-inscriptions', name: 'app_my_events')]
+    #[IsGranted('ROLE_USER')]
+    public function mine(): Response
+    {
+        return $this->render('event/mine.html.twig', [
+            'events' => $this->getUser()->getEvents(),
+        ]);
+    }
+
     #[Route('/evenement/{id}/inscription', name: 'app_event_register', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function register(Event $event, EntityManagerInterface $entityManager): Response
@@ -72,13 +81,13 @@ final class EventController extends AbstractController
 
     #[Route('/evenement/{id}/desinscription', name: 'app_event_unregister', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    public function unregister(Event $event, EntityManagerInterface $entityManager): Response
+    public function unregister(Event $event, Request $request, EntityManagerInterface $entityManager): Response
     {
         $event->removeParticipant($this->getUser());
         $entityManager->flush();
 
         $this->addFlash('success', 'Vous êtes désinscrit de cet événement.');
 
-        return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_event_show', ['id' => $event->getId()]));
     }
 }

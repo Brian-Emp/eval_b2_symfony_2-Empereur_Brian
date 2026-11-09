@@ -29,7 +29,20 @@ final class ValidateController extends AbstractController
         $event->setValidated(true);
         $entityManager->flush();
 
-        $this->addFlash('success', 'L\'événement « '.$event->getTitle().' » a été validé.');
+        $this->addFlash('success', 'L\'événement « ' . $event->getTitle() . ' » a été validé.');
+
+        return $this->redirectToRoute('app_validate');
+    }
+
+    #[Route('/validate/{id}/refuser', name: 'app_validate_refuse', methods: ['POST'])]
+    public function refuse(Event $event, EntityManagerInterface $entityManager): Response
+    {
+        $title = $event->getTitle();
+
+        $entityManager->remove($event);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'L\'événement « ' . $title . ' » a été refusé.');
 
         return $this->redirectToRoute('app_validate');
     }
