@@ -40,5 +40,7 @@
     </source>
 
     <extensions>
+        <!-- DAMA : annule les changements en base à la fin de chaque test -->
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
     </extensions>
 </phpunit>
