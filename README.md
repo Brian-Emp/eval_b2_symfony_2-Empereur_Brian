@@ -71,7 +71,7 @@ php bin/console doctrine:fixtures:load -n   # remplit la base dev avec les donn�
 symfony server:start
 ```
 
-Le site est accessible sur <https://127.0.0.1:8000>. Sans Symfony CLI : `php -S 127.0.0.1:8000 -t public`
+Le site est accessible sur <http://127.0.0.1:8000>. Sans Symfony CLI : `php -S 127.0.0.1:8000 -t public`
 
 ### Base de données
 
@@ -130,22 +130,6 @@ php bin/phpunit --filter testHome    # relance un seul test (sans recréer la ba
 
 ---
 ## Sujet
-
-## Barème indicatif
-
-| Partie | Points |
-|---|---|
-| 1 – Nouvelles fonctionnalités (1 à 5) | 9 |
-| 2 – Tests unitaires (6) | 4 |
-| 3 – Tests fonctionnels (7 à 11) | 7 |
-| Bonus – Tests en plus | +2 |
-
----|---|
-| 1 – Environnement de test (fixtures, DAMA, Makefile) | 4 |
-| 2 – Nouvelles fonctionnalités (4 à 8) | 7 |
-| 3 – Tests unitaires (9) | 3 |
-| 4 – Tests fonctionnels (10 à 14) | 6 |
-| Bonus – Tests en plus | +2 |
 
 ---
 
