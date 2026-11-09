@@ -87,13 +87,24 @@ class EventControllerTest extends WebTestCase
     }
 
     public function testMenuAdmin(): void
-{
-    $client = static::createClient();
-    $admin = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'admin@test.fr']);
-    $client->loginUser($admin);
-    $client->request('GET', '/');
+    {
+        $client = static::createClient();
+        $admin = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'admin@test.fr']);
+        $client->loginUser($admin);
+        $client->request('GET', '/');
 
-    $this->assertSelectorTextContains('.nav', 'Validation');
-}
+        $this->assertSelectorTextContains('.nav', 'Validation');
+    }
+
+    public function testMenuUser(): void
+    {
+        $client = static::createClient();
+        $user = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => 'user@test.fr']);
+        $client->loginUser($user);
+        $client->request('GET', '/');
+
+        $this->assertSelectorTextContains('.nav', 'Mes inscriptions');
+        $this->assertSelectorTextNotContains('.nav', 'Validation');
+    }
 
 }
