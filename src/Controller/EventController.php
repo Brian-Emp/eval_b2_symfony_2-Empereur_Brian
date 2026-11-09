@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Form\FormInterface;
 
 final class EventController extends AbstractController
 {
@@ -21,15 +22,10 @@ final class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Upload de l'image (doc : https://symfony.com/doc/7.4/controller/upload_file.html)
-            $imageFile = $form->get('image')->getData();
-            if ($imageFile) {
-                $fileName = uniqid() . '.' . $imageFile->guessExtension();
-                $imageFile->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
-                $event->setImage($fileName);
-            }
+            $this->uploadImage($form, $event);
 
-            // À l'ajout, l'événement n'est pas validé
+            $event->setAuthor($this->getUser());
+
             $event->setValidated(false);
 
             $entityManager->persist($event);
@@ -45,7 +41,34 @@ final class EventController extends AbstractController
         ]);
     }
 
-    // Symfony va chercher l'Event grâce à l'{id} : s'il n'existe pas => page 404 automatique
+    #[Route('/evenement/{id}/modifier', name: 'app_event_edit', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function edit(Event $event, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->canEdit($event)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->uploadImage($form, $event);
+
+            $entityManager->flush();
+            //$entityManager->persist($event);
+
+            $this->addFlash('success', 'L\'événement a été modifié.');
+
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        return $this->render('event/edit.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+
     #[Route('/evenement/{id}', name: 'app_event_show', requirements: ['id' => '\d+'])]
     public function show(Event $event): Response
     {
@@ -89,5 +112,22 @@ final class EventController extends AbstractController
         $this->addFlash('success', 'Vous êtes désinscrit de cet événement.');
 
         return $this->redirect($request->headers->get('referer') ?? $this->generateUrl('app_event_show', ['id' => $event->getId()]));
+    }
+
+    private function canEdit(Event $event): bool
+    {
+        return $this->isGranted('ROLE_ADMIN')
+            || ($event->getAuthor() !== null && $event->getAuthor() === $this->getUser());
+    }
+
+    private function uploadImage(FormInterface $form, Event $event): void
+    {
+        $imageFile = $form->get('image')->getData();
+
+        if ($imageFile) {
+            $fileName = uniqid() . '.' . $imageFile->guessExtension();
+            $imageFile->move($this->getParameter('kernel.project_dir') . '/public/uploads', $fileName);
+            $event->setImage($fileName);
+        }
     }
 }
